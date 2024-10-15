@@ -1,13 +1,28 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import { Input } from '@/components/ui/input';
 import { SelectBudgetOptions, SelectTravelList } from '@/constants/options';
+import { Button } from '@/components/ui/button';
 
 function CreateTrip() {
   const [place,setPlace]=useState();
+
+  const [formData,setFormData]=useState([]);
+
+  const handleInputChange=(name,value)=>{
+    setFormData({
+        ...formData,
+        [name]:value
+    })
+  }
+
+  useEffect(()=>{
+    console.log(formData);
+  },[formData])
+  
   return (
     <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10'>
-        <h2 className='text-3xl font-sans font-semibold mb-3'>Tell us your Travel preferences</h2>
+        <h2 className='text-3xl font-sans font-bold mb-3'>Tell us your Travel preferences</h2>
         <p className='max-w-fit'>Just provide Some Basic information, and our trip planner will generate a customized itinerary based on your preferences</p>
 
         <div className='mt-10'>
@@ -18,7 +33,7 @@ function CreateTrip() {
                 <GooglePlacesAutocomplete apiKey={import.meta.env.VITE_GOOGLE_MAP_API_KEY}
                 selectProps={{
                     place,
-                    onChange:(v)=>{setPlace(v);console.log(v)}
+                    onChange:(v)=>{setPlace(v); handleInputChange('location',v)}
                 }}
                 />
             </div>
@@ -48,7 +63,7 @@ function CreateTrip() {
         </div>
 
         <div className='mt-10'>
-            <h2>Who do you plan on traveling with on your next adventure?</h2>
+            <h2 className='font-semibold mb-2'>Who do you plan on traveling with on your next adventure?</h2>
             <div className='grid grid-cols-3 gap-2'>
                 {
                     SelectTravelList.map((item,index)=>(
@@ -60,6 +75,10 @@ function CreateTrip() {
                     ))
                 }
             </div>
+        </div>
+
+        <div className='mt-10 text-right'>
+            <Button>Generate Trip</Button>
         </div>
 
 
