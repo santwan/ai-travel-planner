@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
+import { Input } from '@/components/ui/input';
 
 function CreateTrip() {
   const [place,setPlace]=useState();
@@ -20,6 +21,13 @@ function CreateTrip() {
                 }}
                 />
             </div>
+        </div>
+
+        <div className="mt-10">
+            <h2 className='font-semibold mb-2'>
+                How many days are you planning for?
+            </h2>
+            <Input placeholder="Ex.3" type="number" />
         </div>
 
     </div>
