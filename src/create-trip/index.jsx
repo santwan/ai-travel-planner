@@ -5,11 +5,22 @@ import { AI_PROMPT, SelectBudgetOptions, SelectTravelList } from '@/constants/op
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { chatSession } from '@/service/AIModel';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+  
 
 function CreateTrip() {
   const [place,setPlace]=useState();
 
   const [formData,setFormData]=useState([]);
+
+  const [openDailog,setOpenDailog]=useState(false);
 
   const handleInputChange=(name,value)=>{
 
@@ -28,6 +39,15 @@ function CreateTrip() {
   },[formData])
 
   const onGenerateTrip = async () => {
+
+    const user=localStorage.getItem('user');
+
+    if(!user)
+    {   
+        setOpenDailog(true);
+        return;
+    }
+
     if(formData?.noOfDays>15 && !formData?.location||!formData?.budget||!formData?.traveler)
     {   
         toast("Please Fill all the details")
@@ -44,6 +64,8 @@ function CreateTrip() {
     console.log(FINAL_PROMPT);
 
     const result=await chatSession.sendMessage(FINAL_PROMPT);
+
+    console.log(result?.response?.text());
   }
 
 
@@ -118,6 +140,19 @@ function CreateTrip() {
         <div className='mt-10 text-right'>
             <Button onClick={onGenerateTrip}>Generate Trip</Button>
         </div>
+
+        <Dialog open={openDailog}>
+            <DialogContent>
+                <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                    This action cannot be undone. This will permanently delete your account
+                    and remove your data from our servers.
+                </DialogDescription>
+                </DialogHeader>
+            </DialogContent>
+        </Dialog>
+
 
 
     </div>
