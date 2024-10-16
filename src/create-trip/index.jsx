@@ -150,7 +150,7 @@ function CreateTrip() {
             <Button onClick={onGenerateTrip}>Generate Trip</Button>
         </div>
 
-        <Dialog>
+        <Dialog open={openDailog} onOpenChange={setOpenDailog}>
             <DialogContent>
                 <DialogHeader>
                 <DialogTitle>Are you absolutely sure?</DialogTitle>
