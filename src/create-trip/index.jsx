@@ -14,6 +14,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { toast } from 'sonner';
+import { FcGoogle } from "react-icons/fc";
+import { useGoogleLogin } from '@react-oauth/google';
+import axios, { AxiosHeaders } from 'axios';
   
 
 function CreateTrip() {
@@ -38,6 +41,11 @@ function CreateTrip() {
   useEffect(()=>{
     console.log(formData);
   },[formData])
+
+  const login=useGoogleLogin({
+    onSuccess:(codeResponse)=>GetUserProfile(codeResponse),
+    onError:(error)=>console.log(error)
+  })
 
   const onGenerateTrip = async () => {
 
@@ -76,7 +84,22 @@ function CreateTrip() {
   }
 
 
-
+  const GetUserProfile = (tokenInfo) => {
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?acess_token=${tokenInfo?.access_token}`,
+        {
+            headers:{
+                Authorization:`Bearer ${tokenInfo?.access_token}`,
+                Accept:'Application/json'
+            }
+        }
+    ).then((resp) => {
+        console.log(resp);
+        localStorage.setItem('user',JSON.stringify(resp.data));
+        setOpenDailog(false);
+        onGenerateTrip();
+    })
+    
+  }
   return (
     <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10'>
         <h2 className='text-3xl font-sans font-bold mb-3'>Tell us your Travel preferences</h2>
@@ -153,10 +176,16 @@ function CreateTrip() {
         <Dialog open={openDailog} onOpenChange={setOpenDailog}>
             <DialogContent>
                 <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogTitle>
+                    <img src="/logo.svg" alt="" className='h-12 text-center'/>
+                    <h2 className='font-bold text-lg '>Sign In With Google</h2>
+                </DialogTitle>
                 <DialogDescription>
-                    This action cannot be undone. This will permanently delete your account
-                    and remove your data from our servers.
+                    Sign in to the App with Google Authentication securely
+                    <Button onClick={login} className='mt-3 w-full'>
+                        <FcGoogle className='mr-2 text-xl'/>
+                        Sign in with Google
+                    </Button>
                 </DialogDescription>
                 </DialogHeader>
             </DialogContent>
