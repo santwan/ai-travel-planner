@@ -8,7 +8,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import CreateTrip from './create-trip/index.jsx'
 import Header from './components/custom/Header.jsx'
 import Hero from './components/custom/Hero.jsx'
-import { Toaster } from 'sonner'
+import { Toaster } from './components/ui/sonner.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
 

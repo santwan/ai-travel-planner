@@ -3,7 +3,7 @@ import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 import { Input } from '@/components/ui/input';
 import { AI_PROMPT, SelectBudgetOptions, SelectTravelList } from '@/constants/options';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import { chatSession } from '@/service/AIModel';
 import {
     Dialog,
@@ -13,6 +13,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import { toast } from 'sonner';
   
 
 function CreateTrip() {
@@ -25,7 +26,7 @@ function CreateTrip() {
   const handleInputChange=(name,value)=>{
 
     if(name=='noOfDays' && value>15){
-        console.log("Please enter Trip days Less than 15")
+        toast("Please enter Trip days Less than 15")
     }
 
     setFormData({
@@ -40,19 +41,25 @@ function CreateTrip() {
 
   const onGenerateTrip = async () => {
 
+    if(!formData?.noOfDays || !formData?.location||!formData?.budget||!formData?.traveler)
+        {   
+            toast("Please Fill all the details")
+            if(formData.noOfDays>15)
+                {
+                    toast("Enter Travel Days less than 15")
+                }
+            return;
+        }
+
     const user=localStorage.getItem('user');
 
     if(!user)
     {   
-        setOpenDailog(true);
+        setOpenDailog(true)
         return;
     }
 
-    if(formData?.noOfDays>15 && !formData?.location||!formData?.budget||!formData?.traveler)
-    {   
-        toast("Please Fill all the details")
-        return;
-    }
+
     
     const FINAL_PROMPT=AI_PROMPT
     .replace('{location}',formData?.location?.label)
@@ -61,11 +68,11 @@ function CreateTrip() {
     .replace('{budget}',formData?.budget)
     .replace('{noOfDays}',formData?.noOfDays)
 
-    console.log(FINAL_PROMPT);
+    // console.log(FINAL_PROMPT);
 
     const result=await chatSession.sendMessage(FINAL_PROMPT);
 
-    console.log(result?.response?.text());
+    console.log("--",result?.response?.text());
   }
 
 
@@ -136,12 +143,14 @@ function CreateTrip() {
                 }
             </div>
         </div>
+        
 
+        
         <div className='mt-10 text-right'>
             <Button onClick={onGenerateTrip}>Generate Trip</Button>
         </div>
 
-        <Dialog open={openDailog}>
+        <Dialog>
             <DialogContent>
                 <DialogHeader>
                 <DialogTitle>Are you absolutely sure?</DialogTitle>
@@ -152,6 +161,7 @@ function CreateTrip() {
                 </DialogHeader>
             </DialogContent>
         </Dialog>
+
 
 
 
