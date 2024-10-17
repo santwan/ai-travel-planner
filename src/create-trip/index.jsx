@@ -19,6 +19,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import axios, { AxiosHeaders } from 'axios';
 import { doc, setDoc } from "firebase/firestore";
 import { db } from '@/service/firebaseConfig';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 function CreateTrip() {
   const [place,setPlace]=useState();
@@ -26,6 +27,8 @@ function CreateTrip() {
   const [formData,setFormData]=useState([]);
 
   const [openDailog,setOpenDailog]=useState(false);
+
+  const [loading,setLoading] = useState(false);
 
   const handleInputChange=(name,value)=>{
 
@@ -68,7 +71,7 @@ function CreateTrip() {
         return;
     }
 
-
+    setLoading(true);
     
     const FINAL_PROMPT=AI_PROMPT
     .replace('{location}',formData?.location?.label)
@@ -82,11 +85,13 @@ function CreateTrip() {
     const result=await chatSession.sendMessage(FINAL_PROMPT);
 
     console.log("--",result?.response?.text());
+    setLoading(false);
     SaveAiTrip(result?.response?.text());
   }
 
   const SaveAiTrip = async(TripData) => {
     
+    setLoading(true);
     const user = JSON.parse( localStorage.getItem('user'));
     const docId = Date.now().toString();
      // Add a new document in collection "AiTrips"
@@ -97,6 +102,7 @@ function CreateTrip() {
       id:docId
 
     });
+    setLoading(false);
   }
 
   const GetUserProfile = (tokenInfo) => {
@@ -198,8 +204,10 @@ function CreateTrip() {
                 <DialogDescription>
                     Sign in to the App with Google Authentication securely
                     <Button onClick={login} className='mt-3 w-full'>
-                        <FcGoogle className='mr-2 text-xl'/>
-                        Sign in with Google
+                        <>
+                          <FcGoogle className='mr-2 text-xl'/>
+                          Sign in with Google
+                        </>
                     </Button>
                 </DialogDescription>
                 </DialogHeader>
