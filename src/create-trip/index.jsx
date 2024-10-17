@@ -17,7 +17,8 @@ import { toast } from 'sonner';
 import { FcGoogle } from "react-icons/fc";
 import { useGoogleLogin } from '@react-oauth/google';
 import axios, { AxiosHeaders } from 'axios';
-  
+import { doc, setDoc } from "firebase/firestore";
+import { db } from '@/service/firebaseConfig';
 
 function CreateTrip() {
   const [place,setPlace]=useState();
@@ -81,8 +82,22 @@ function CreateTrip() {
     const result=await chatSession.sendMessage(FINAL_PROMPT);
 
     console.log("--",result?.response?.text());
+    SaveAiTrip(result?.response?.text());
   }
 
+  const SaveAiTrip = async(TripData) => {
+    
+    const user = JSON.parse( localStorage.getItem('user'));
+    const docId = Date.now().toString();
+     // Add a new document in collection "AiTrips"
+    await setDoc(doc(db, "AiTrips", docId), {
+      userSelection:formData,
+      tripData:TripData,
+      userEmail:user?.email,
+      id:docId
+
+    });
+  }
 
   const GetUserProfile = (tokenInfo) => {
     axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?acess_token=${tokenInfo?.access_token}`,
